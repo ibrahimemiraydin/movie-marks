@@ -11,7 +11,7 @@ afterEach(() => { cleanup(); vi.resetAllMocks(); listeners.clear(); delete docum
 it('kaydedilmiş temayı yükler ve diğer pencerenin değişimini uygular', async () => {
   get.mockResolvedValue({ theme: 'light' });
   render(<Probe/>); await screen.findByText('light');
-  expect(document.documentElement.dataset.theme).toBe('light');
+  await waitFor(() => expect(document.documentElement.dataset.theme).toBe('light'));
   for (const listener of listeners) listener({ theme: { newValue: 'dark' } }, 'local');
   await waitFor(() => expect(document.documentElement.dataset.theme).toBe('dark'));
 });

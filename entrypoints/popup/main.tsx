@@ -3,4 +3,6 @@ import ReactDOM from 'react-dom/client';
 import App from '../../src/App';
 import '../../src/style.css';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);
+ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App surface="popup"/></React.StrictMode>);
+
+import '../../src/design-system.css';

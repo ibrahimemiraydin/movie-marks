@@ -1,6 +1,6 @@
 {
   "name": "movie-marks",
-  "version": "0.11.0",
+  "version": "0.22.1",
   "description": "Moviemarks personal movie and TV tracker",
   "scripts": {
     "test": "vitest run",

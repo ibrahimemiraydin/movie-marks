@@ -4,6 +4,7 @@ import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import SettingsPanel from './SettingsPanel';
 import { saveToken } from './storage';
+vi.mock('./archiveStorage', () => ({ readArchive: vi.fn() }));
 vi.mock('./storage', () => ({ saveToken: vi.fn() }));
 beforeAll(() => { HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', ''); }; });
 afterEach(() => { cleanup(); vi.resetAllMocks(); });

@@ -1,3 +1,100 @@
+## 0.22.1
+
+- Popup boşlukları, uzun Devam Et başlıkları ve yeniden izleme etiketi birlikteyken 600 px yükseklik sınırını aşmayacak şekilde sıkılaştırıldı. İçerik ve yatay kaydırma çubuğunun tutma alanı korunur.
+- Türkçe/İngilizce uzun başlık ve yeniden izleme örnekleriyle popup taşma kontrolü eklendi.
+
+## 0.22.0
+
+- Sağ detay paneli artık çalışma alanında gerçek yer ayırır. 1920 px ekranda kalan alana altı kart sığar; daha dar alanlarda sütun sayısı kartların okunabilirliğine göre ayarlanır. Hiçbir kart panelin altında kalmaz.
+- Yeni bir yapım seçildiğinde açık detay diyaloğu yeniden oluşturulmaz. Yalnızca içeriği yumuşak geçişle değişir; önceki yapıma ait detay, sekme ve kaydedilmemiş kişisel taslak yeni yapıma taşınmaz.
+- Diyaloglara hafif giriş/geçiş animasyonları eklendi. Azaltılmış hareket tercihi korunur.
+- Bölüm işaretleme kontrolleri tüm satıra göre ortalandı ve kaydırma çubuğundan uzaklaştırıldı. Bölüm listesi sınırında kaydırma dış detay alanına devam eder.
+- Devam Et yatay kaydırma çubuğu 14 px yüksekliğe çıkarıldı; tutma alanı ve görünürlüğü artırıldı.
+- Tarayıcı ikonları aynı yer imi/oynat simgesinin daha büyük ve net vektör kaynağından, altı boyutta yeniden üretildi.
+
+## 0.21.0
+
+- Geniş sayfadaki sağ detay paneli artık afiş alanını yeniden boyutlandırmadan üzerinde açılır; mevcut sütun sayısı ve kart ölçüleri korunur.
+- Panel açılışı/kapanışında odak geri yükleme sayfayı kaydırmaz. Aramaya veya panel dışına tıklamak detayları kapatmaz; kapatma düğmesi, Escape ve yeni içerik seçimi kullanılabilir.
+- Bölüm satırlarında oval köşeli numara kutusu ve sağda yuvarlak izleme kontrolü kullanılır. Klavye, erişilebilir etiketler, toplu işaretleme ve spoiler davranışları korunur.
+- Film/dizi kartlarında süre ve sezon sayısı gösterilir. Eski kayıtlar için bilgiler otomatik alınır ve yedi günlük ayrı bir önbellekte tutulur; kişisel arşiv değiştirilmez.
+- Yeni kayıtlardaki süre/sezon alanları JSON yedekleme ve geri yüklemede korunur.
+
+## 0.20.0
+
+- Bir web sayfasında metin seçildiğinde sağ tık menüsünde “Moviemarks’ta ara” seçeneği gösterilir. Menü uygulamanın dilini takip eder.
+- Seçilen metin popup aramasına aktarılır, arama paneli otomatik açılır ve TMDB bağlantısı hazır olduğunda sonuçlar yüklenir. Seçim arşive kaydedilmez.
+- Popup açma API’sinin desteklenmediği/reddedildiği tarayıcılarda aynı arama kompakt bir uzantı penceresinde açılır.
+- Bağlam menüsü için `contextMenus` izni eklendi; sayfa okuma veya içerik betiği izni gerekmez.
+- Popup altındaki TMDB bilgilendirmesi kaldırıldı; geniş sayfadaki bilgilendirme korunur.
+
+## 0.19.0
+
+- Popup ve geniş sayfa için ortak renk, tipografi, boşluk, kontrol ve odak düzeni oluşturuldu. Açık/koyu temalar korunur; azaltılmış hareket tercihi desteklenir.
+- Kartlarda favori hızlı işlemi ve klavye destekli üç nokta menüsü kullanılır. İzleme durumları daha kompakt rozetlere dönüştürüldü.
+- Kütüphane araması, içerik tipi, görünüm ve filtreleme aynı araç çubuğunda toplandı. Etkin filtreler tek tek kaldırılabilen etiketlerle gösterilir.
+- Arama film/dizi gruplarına ayrıldı; kişi meslekleri ve klavyeyle gezinme eklendi. Yükleme sırasında iskelet satırlar gösterilir.
+- Geniş sayfada (900 px ve üzeri) içerik detayları sağ panelde açılır. Kütüphane kullanılabilir kalır; popup ve dar ekranlarda modal düzeni sürer.
+- İstatistik grafiğine fare ve klavyeyle açılan aylık bilgi kartları eklendi.
+
+## 0.18.0
+
+- Popup ve geniş sayfa ayrı girişlere ve düzenlere ayrıldı. Popup 480 px hızlı arama, kompakt Devam Et, son kayıtlar ve hızlı durum değiştirmeye odaklanır.
+- Geniş ekranda aç düğmesi artık `dashboard.html` yönetim ekranını açar. Kütüphane, favoriler, koleksiyonlar, takvim ve istatistikler yan menüde yer alır.
+- Popup kısayolları geniş sayfanın ilgili bölümünü doğrudan açar; bölüm adresleri ve tarayıcı geri/ileri gezinmesi desteklenir.
+- İki ekran aynı arşivi, bölüm ilerlemesini, tema ve dil tercihlerini kullanır. İki açık ekranda değişikliklerin canlı eşitlenmesi örnek verilerle Chromium'da doğrulandı.
+
+## 0.17.1
+
+- Etkin filtre veya sıralama varken Filtrele ve sırala düğmesinin sağına tek tıkla sıfırlama eklendi.
+- Hızlı içerik tipi ve puan kaynağı tercihleri de etkinlik sayacına dahil edilir. Panel içi ve dışı sıfırlama aynı varsayılanları kullanır; arama metni korunur.
+
+## 0.17.0
+
+- Aramadan açılan, henüz kaydedilmemiş dizilerde Bölümler sekmesi kullanılabilir. İlk bölüm/sezon işaretlemesi yapımı ve ilerlemesini birlikte kaydeder; Kişisel Alanım kayıt sonrasında açılır.
+- Ayarlara tam kişisel arşiv için JSON dışa aktarma/önizlemeli geri yükleme, CSV tablo indirme ve onaylı sıfırlama eklendi.
+- JSON dosyaları sürüm, alanlar, kimlikler, tarihler ve koleksiyon üyelikleri bakımından doğrulanır. TMDB anahtarı dışa/içe aktarılmaz; hatalı dosyalar mevcut arşivi değiştirmez.
+- Ayarlar içeriği küçük popup'ta tek kaydırma alanı kullanır. Tüm yeni metinler Türkçe ve İngilizce destekler.
+
+## 0.16.0
+
+- TMDB kişi araması oyuncularla sınırlı olmaktan çıkarıldı; yönetmen ve yaratıcılar da bulunabilir.
+- Kişinin film/dizi listesinde oyunculuk ve ekip kredileri birleştirilir. Birden fazla görevle yer alınan aynı yapım tek kez gösterilir ve popülerliğe göre sıralanır.
+- Kişi araması metinleri Türkçe ve İngilizce güncellendi.
+
+## 0.15.1
+
+- Devam Et kartları kütüphanenin sütun genişlikleriyle hizalandı; popup içinde üç kart yan yana görünür.
+- Yatay rafın doğal genişliği popup boyutunu etkilemez. Fazla kartlar raf içinde kayar; oklar güncel kart genişliğine göre ilerler.
+
+## 0.15.0
+
+- Ana gezinmeye İstatistikler eklendi: farklı film/dizi sayıları, tüm turlardaki bölüm izlemeleri ve bilinen sürelere göre toplam izleme zamanı.
+- Yıl seçimi, aylık grafiklerden geçmiş filtreleme, tür/kadro/yönetmen sıralamaları, kişisel puan listesi ve tarihli izleme zaman çizelgesi eklendi.
+- Beş sayfalı yıl özeti, o yılın türleri, yıldızları, kişisel favorisi ve izleme ritmini gösterir.
+- TMDB film ve izlenen sezon bilgileri sınırlı eşzamanlılıkla tamamlanıp yerel önbelleğe alınır. Dizi yönetmenleri yalnızca izlenen bölümlerin kredilerinden belirlenir.
+- Tarihsiz veya süresi bilinmeyen kayıtlar açıkça belirtilir; eksik veriler için bölüm sayısı veya süre tahmini yapılmaz. Türkçe/İngilizce ve iki tema desteklenir.
+
+## 0.14.0
+
+- Kütüphane üstüne yatay kartlarla Devam Et alanı eklendi. İzleniyor durumundaki yapımlar ve aktif turunda bölüm işaretlenmiş diziler gösterilir; en son etkinlik önce gelir.
+- Dizi kartlarında sezon/bölüm toplamları, sıradaki bölüm ve ilgili sezonun ilerlemesi yer alır. Tek tıkla bölüm işaretleme, detay paneliyle aynı kayıt işlemini kullanır.
+- Yeniden izleme turları, özel bölüm tercihi, atlanan bölümler ve dil seçimi dikkate alınır. Bitmiş ve tamamen izlenmiş diziler kaldırılır; yeni bölüm bekleyen dizilerde yayın tarihi gösterilir.
+- Eksik, eski veya yüklenememiş bölüm bilgileriyle otomatik ilerleme engellenir. Filmlerde Filmi izledim işlemi tamamlandı durumunu ve izleme tarihini kaydeder.
+
+## 0.13.0
+
+- Bildirimler üstte, sayfa düzenini kaydırmayan bağımsız bir alana taşındı. Yeni bildirimlerde aşağı kayma animasyonu, otomatik kapanma, bekletme ve işlem türüne göre renk eklendi.
+- Ayarlara kalıcı Türkçe/İngilizce seçimi eklendi. Açık pencereler dil değişimini izler; arayüz, yardımcı metinler ve tarihler seçilen dili kullanır.
+- TMDB arama/detay/bölüm istekleri seçilen dile uyar. Türkçe ve İngilizce bölüm önbellekleri ayrıdır; kişisel kayıtlar korunur.
+
+## 0.12.0
+
+- Arama sonuçlarındaki afiş ve başlıklar detay panelini açar.
+- Kayıtlı olmayan yapımlarda genel bilgiler ve ekleme işlemleri gösterilir. Favori ve koleksiyon işlemleri yapımı otomatik olarak kütüphaneye ekler; kişisel alan, izleme durumu ve dizi bölümleri anında kullanılabilir olur.
+- Koleksiyon yönetimindeki düzenleme ve silme işlemleri simgeli düğmeler kullanır.
+- Kütüphane, Favoriler ve Koleksiyonlar için kalıcı kart/liste görünümü tercihi eklendi.
+
 # Sürüm geçmişi
 
 Eski sürümlerde anlatılan davranışlar sonraki sürüm notlarıyla değişmiş olabilir. Güncel kullanım için [README](../README.md) dosyasına bak.

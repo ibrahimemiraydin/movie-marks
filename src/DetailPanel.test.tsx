@@ -7,12 +7,12 @@ import DetailPanel from './DetailPanel';
 import { getMediaDetails, type Media, type MediaDetails } from './tmdb';
 
 vi.mock('./tmdb', async original => ({ ...await original<typeof import('./tmdb')>(), getMediaDetails: vi.fn() }));
-beforeAll(() => { HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', ''); }; });
+beforeAll(() => { HTMLDialogElement.prototype.show = function () { this.setAttribute('open', ''); }; HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', ''); }; });
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 const item: Media = { id: 1, media_type: 'tv', title: 'Dizi', year: '2024', poster_path: null, vote_average: 8, overview: 'Kayıtlı açıklama' };
 const details: MediaDetails = { ...item, overview: 'Güncel açıklama', originalTitle: 'Show', backdrop: null, genres: ['Dram'], date: '2024-01-01', runtime: 45, status: 'Returning Series', seasons: 2, episodes: 16, creators: ['Yaratıcı'], cast: [{ id: 1, name: 'Oyuncu', character: 'Karakter', profile: null }] };
 it('sekmeler arasında not taslağını korur; filmde bölüm sekmesi göstermez', async () => {
-  vi.mocked(getMediaDetails).mockResolvedValue(details);
+  vi.mocked(getMediaDetails).mockResolvedValue({ ...details, media_type: 'movie' });
   render(<DetailPanel item={{ ...item, media_type: 'movie' }} token="token" close={vi.fn()} onPersonalSave={async () => true}/>);
   await screen.findByText('Güncel açıklama');
   expect(screen.queryByRole('tab', { name: 'Bölümler' })).toBeNull();
@@ -79,4 +79,63 @@ it('Escape kapatma olayını işler ve anahtar yokken istek göndermez', () => {
   fireEvent(screen.getByRole('dialog'), new Event('cancel', { cancelable: true }));
   expect(close).toHaveBeenCalled();
   expect(getMediaDetails).not.toHaveBeenCalled();
+});
+
+it('arama detayında bölümleri açar, kişisel alanı kayıt sonrasına saklar', async () => {
+  vi.mocked(getMediaDetails).mockResolvedValue(details);
+  const add = vi.fn(); const favorite = vi.fn().mockResolvedValue(true);
+  const props = { item, token: 'token', close: vi.fn(), onAdd: add, onFavorite: favorite, onPersonalSave: vi.fn().mockResolvedValue(true), onEpisodeSave: vi.fn(), onStatusChange: vi.fn() };
+  const view = render(<DetailPanel {...props} inLibrary={false}/>);
+  await screen.findByText('Güncel açıklama');
+  expect(screen.queryByRole('tab', { name: 'Kişisel Alanım' })).toBeNull();
+  expect(screen.getByRole('tab', { name: 'Bölümler' })).toBeTruthy();
+  expect(screen.queryByRole('combobox')).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Kütüphaneye ekle' })); expect(add).toHaveBeenCalledOnce();
+  fireEvent.click(screen.getByRole('button', { name: 'Favorilere ekle' })); expect(favorite).toHaveBeenCalledOnce();
+  view.rerender(<DetailPanel {...props} inLibrary/>);
+  expect(screen.queryByRole('button', { name: 'Kütüphaneye ekle' })).toBeNull();
+  expect(screen.getByRole('tab', { name: 'Bölümler' })).toBeTruthy();
+  expect(screen.getByRole('tab', { name: 'Kişisel Alanım' })).toBeTruthy();
+  expect(screen.getByRole('combobox')).toBeTruthy();
+});
+
+it('geniş sayfada modal olmayan sağ paneli açar; içerik geçiş tıklamalarını korur', async () => {
+  vi.stubGlobal('matchMedia', () => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }));
+  const show = vi.spyOn(HTMLDialogElement.prototype, 'show').mockImplementation(function (this: HTMLDialogElement) { this.setAttribute('open', ''); });
+  const close = vi.fn();
+  vi.mocked(getMediaDetails).mockResolvedValue(details);
+  try {
+    render(<><button data-open-details>Başka yapım</button><button>Dış alan</button><DetailPanel presentation="sheet" item={item} token="token" close={close}/></>);
+    await screen.findByText('Güncel açıklama');
+    expect(screen.getByRole('dialog').getAttribute('aria-modal')).toBe('false');
+    expect(document.body.style.overflow).toBe('');
+    fireEvent.click(screen.getByText('Başka yapım'));
+    expect(close).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByText('Dış alan'));
+    expect(close).not.toHaveBeenCalled();
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(close).toHaveBeenCalledTimes(1);
+  } finally { cleanup(); show.mockRestore(); vi.unstubAllGlobals(); }
+});
+
+it('başka yapıma geçerken açık diyaloğu korur, eski detayları ve not taslağını taşımaz', async () => {
+  vi.mocked(getMediaDetails).mockResolvedValue(details);
+  const show = vi.spyOn(HTMLDialogElement.prototype, 'showModal');
+  const props = { token: 'token', close: vi.fn(), onPersonalSave: async () => true };
+  const view = render(<DetailPanel {...props} item={item}/>);
+  await screen.findByText('Güncel açıklama');
+  const node = screen.getByRole('dialog');
+  fireEvent.click(screen.getByRole('tab', { name: 'Kişisel Alanım' }));
+  fireEvent.change(screen.getByLabelText('Kişisel notlarım'), { target: { value: 'Sadece ilk yapıma ait taslak' } });
+  const second: Media = { ...item, id: 2, media_type: 'movie', title: 'İkinci film' };
+  vi.mocked(getMediaDetails).mockResolvedValue({ ...details, ...second, overview: 'İkinci açıklama' });
+  view.rerender(<DetailPanel {...props} item={second}/>);
+  expect(screen.getByRole('dialog')).toBe(node);
+  expect(screen.queryByText('Güncel açıklama')).toBeNull();
+  await screen.findByText('İkinci açıklama');
+  expect(show).toHaveBeenCalledTimes(1);
+  expect(screen.getByRole('tab', { name: 'Genel Bakış' }).getAttribute('aria-selected')).toBe('true');
+  fireEvent.click(screen.getByRole('tab', { name: 'Kişisel Alanım' }));
+  expect((screen.getByLabelText('Kişisel notlarım') as HTMLTextAreaElement).value).toBe('');
+  show.mockRestore();
 });

@@ -1,3 +1,4 @@
+import { locale } from './i18n';
 import type { Media } from './tmdb';
 import { getWatchStatus, type WatchStatus } from './watchStatus';
 import { lastWatched } from './personal';
@@ -12,7 +13,7 @@ export function filterAndSort(source: Media[], filters: LibraryFilters, sort: So
   const rating = (m: Media) => filters.ratingSource === 'personal' ? m.personalRating ?? null : m.vote_average > 0 ? m.vote_average : null;
   const items = source.filter(m => {
     if (type !== 'all' && m.media_type !== type || status !== 'all' && getWatchStatus(m) !== status) return false;
-    if (!m.title.toLocaleLowerCase('tr-TR').includes(query.trim().toLocaleLowerCase('tr-TR'))) return false;
+    if (!m.title.toLocaleLowerCase(locale()).includes(query.trim().toLocaleLowerCase(locale()))) return false;
     if (filters.genre && !m.genres?.includes(filters.genre)) return false;
     if ((filters.yearFrom || filters.yearTo) && (!m.year || filters.yearFrom && Number(m.year) < Number(filters.yearFrom) || filters.yearTo && Number(m.year) > Number(filters.yearTo))) return false;
     const score = rating(m);
@@ -30,7 +31,7 @@ export function filterAndSort(source: Media[], filters: LibraryFilters, sort: So
     if (left === null && right !== null) return 1;
     if (right === null && left !== null) return -1;
     if (left === null && right === null) return originalIndex.get(a)! - originalIndex.get(b)!;
-    const result = typeof left === 'number' && typeof right === 'number' ? left - right : String(left).localeCompare(String(right), 'tr');
+    const result = typeof left === 'number' && typeof right === 'number' ? left - right : String(left).localeCompare(String(right), locale());
     return (sort.endsWith('Desc') ? -result : result) || originalIndex.get(a)! - originalIndex.get(b)!;
   });
 }

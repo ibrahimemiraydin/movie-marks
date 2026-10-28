@@ -81,3 +81,16 @@ it('eksik sezonlarda otomatik ilerleme kapalıdır; gelecek bölümler işaretle
   expect((await screen.findByRole('button', { name: 'Bölümü İzledim' }) as HTMLButtonElement).disabled).toBe(true);
   expect((screen.getByRole('checkbox', { name: 'S01 B01 izlendi' }) as HTMLInputElement).disabled).toBe(true);
 });
+
+it('kütüphane öncesinde tercihleri önizler ve ilk işaretlemeyle birlikte iletir', async () => {
+  vi.mocked(loadSeriesCatalog).mockResolvedValue(catalog);
+  const save = vi.fn().mockResolvedValue(null);
+  render(<SeriesTracker item={item} token="token" inLibrary={false} save={save}/>);
+  await screen.findByText('Yayını bitmiş dizi');
+  expect(screen.queryByRole('button', { name: 'Yeni izleme turu' })).toBeNull();
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Özel bölümleri takip et' }));
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Spoiler koruması' }));
+  expect(save).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('checkbox', { name: 'S01 B01 izlendi' }));
+  expect(save).toHaveBeenCalledWith({ type: 'episode', key: '1:1', watched: true }, catalog, expect.objectContaining({ includeSpecials: true, spoilerProtection: false }));
+});

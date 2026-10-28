@@ -1,3 +1,4 @@
+import { getLanguage } from './i18n';
 import type { Media } from './tmdb';
 import { todayLocal } from './personal';
 export type Episode = { id: number; season: number; number: number; name: string; overview: string; still: string | null; runtime: number | null; airDate: string };
@@ -11,7 +12,7 @@ export type EpisodeAction =
   | { type: 'specials'; value: boolean } | { type: 'spoilers'; value: boolean }
   | { type: 'newRun' } | { type: 'selectRun'; id: string } | { type: 'deleteRun'; id: string };
 export const episodeKey = (e: Episode) => `${e.season}:${e.number}`;
-export const episodeLabel = (e: Episode) => `S${String(e.season).padStart(2, '0')} B${String(e.number).padStart(2, '0')}`;
+export const episodeLabel = (e: Episode) => `S${String(e.season).padStart(2, '0')} ${getLanguage() === 'en' ? 'E' : 'B'}${String(e.number).padStart(2, '0')}`;
 export const defaultTracking = (): EpisodeTracking => ({ activeRunId: 'first', includeSpecials: false, spoilerProtection: true, runs: [{ id: 'first', name: 'İlk izleme', startedAt: new Date().toISOString(), watched: {} }] });
 export const activeRun = (tracking: EpisodeTracking) => tracking.runs.find(r => r.id === tracking.activeRunId) ?? tracking.runs[0]!;
 export const isAired = (e: Episode, today = todayLocal()) => !!e.airDate && e.airDate <= today;

@@ -1,7 +1,10 @@
+import { locale, t } from './i18n';
 import type { WatchStatus } from './watchStatus';
 import type { EpisodeTracking } from './episodes';
 
 export type Media = {
+  runtime?: number | null;
+  seasonCount?: number | null;
   episodeTracking?: EpisodeTracking;
   addedAt?: string;
   releaseDate?: string;
@@ -25,7 +28,7 @@ export function normalizeResults(results: Record<string, unknown>[]): Media[] {
   return results.filter(r => (r.media_type === 'movie' || r.media_type === 'tv') && typeof r.id === 'number').map(r => ({
     id: r.id as number,
     media_type: r.media_type as Media['media_type'],
-    title: String(r.title || r.name || 'İsimsiz'),
+    title: String(r.title || r.name || t('İsimsiz')),
     poster_path: typeof r.poster_path === 'string' ? r.poster_path : null,
     year: String(r.release_date || r.first_air_date || '').slice(0, 4),
     vote_average: typeof r.vote_average === 'number' ? r.vote_average : 0,
@@ -37,9 +40,10 @@ export const mediaKey = (media: Media) => `${media.media_type}:${media.id}`;
 
 export async function getFilterMetadata(media: Media, token: string, signal: AbortSignal) {
   const url = new URL(`https://api.themoviedb.org/3/${media.media_type}/${media.id}`);
+  // Keep persisted genre names consistent across interface languages.
   url.searchParams.set('language', 'tr-TR');
   const data = await request(url, token, signal);
-  return { genres: (data.genres ?? []).map((g: { name: string }) => g.name) as string[], releaseDate: String(data.release_date || data.first_air_date || '') };
+  return { runtime: media.media_type === 'movie' && Number.isFinite(data.runtime) && data.runtime > 0 ? data.runtime as number : null, seasonCount: media.media_type === 'tv' && Number.isInteger(data.number_of_seasons) && data.number_of_seasons >= 0 ? data.number_of_seasons as number : null, genres: (data.genres ?? []).map((g: { name: string }) => g.name) as string[], releaseDate: String(data.release_date || data.first_air_date || '') };
 }
 
 export type MediaDetails = Media & {
@@ -52,7 +56,7 @@ export type MediaDetails = Media & {
 
 export async function getMediaDetails(media: Media, token: string, signal: AbortSignal): Promise<MediaDetails> {
   const url = new URL(`https://api.themoviedb.org/3/${media.media_type}/${media.id}`);
-  url.searchParams.set('language', 'tr-TR');
+  url.searchParams.set('language', locale());
   url.searchParams.set('append_to_response', 'credits');
   const data = await request(url, token, signal);
   const normalized = normalizeResults([{ ...data, media_type: media.media_type }])[0];
@@ -71,7 +75,7 @@ export async function getMediaDetails(media: Media, token: string, signal: Abort
   };
 }
 
-export type Person = { id: number; name: string; profile_path: string | null };
+export type Person = { id: number; name: string; profile_path: string | null; department?: string };
 export type SearchResults = { media: Media[]; people: Person[] };
 
 async function request(url: URL, token: string, signal: AbortSignal) {
@@ -87,14 +91,15 @@ async function request(url: URL, token: string, signal: AbortSignal) {
 export async function searchAll(query: string, token: string, signal: AbortSignal): Promise<SearchResults> {
   const url = new URL('https://api.themoviedb.org/3/search/multi');
   url.searchParams.set('query', query);
-  url.searchParams.set('language', 'tr-TR');
+  url.searchParams.set('language', locale());
   url.searchParams.set('include_adult', 'false');
   const data = await request(url, token, signal);
   const results: Record<string, unknown>[] = data.results ?? [];
   return {
     media: normalizeResults(results),
-    people: results.filter(r => r.media_type === 'person' && typeof r.id === 'number' && r.known_for_department === 'Acting').map(r => ({
-      id: r.id as number, name: String(r.name || 'İsimsiz'), profile_path: typeof r.profile_path === 'string' ? r.profile_path : null,
+    people: results.filter(r => r.media_type === 'person' && typeof r.id === 'number' && r.adult !== true).map(r => ({
+      ...(typeof r.known_for_department === 'string' ? { department: r.known_for_department } : {}),
+      id: r.id as number, name: String(r.name || t('İsimsiz')), profile_path: typeof r.profile_path === 'string' ? r.profile_path : null,
     })),
   };
 }
@@ -105,9 +110,9 @@ export async function searchMedia(query: string, token: string, signal: AbortSig
 
 export async function personCredits(id: number, token: string, signal: AbortSignal): Promise<Media[]> {
   const url = new URL(`https://api.themoviedb.org/3/person/${id}/combined_credits`);
-  url.searchParams.set('language', 'tr-TR');
+  url.searchParams.set('language', locale());
   const data = await request(url, token, signal);
-  const cast = (data.cast ?? []) as Record<string, unknown>[];
-  const sorted = cast.filter(r => r.adult !== true).sort((a, b) => Number(b.popularity || 0) - Number(a.popularity || 0));
+  const credits = [...(data.cast ?? []), ...(data.crew ?? [])] as Record<string, unknown>[];
+  const sorted = credits.filter(r => r.adult !== true).sort((a, b) => Number(b.popularity || 0) - Number(a.popularity || 0));
   return [...new Map(normalizeResults(sorted).map(m => [mediaKey(m), m])).values()];
 }
