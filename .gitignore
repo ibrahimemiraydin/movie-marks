@@ -1,0 +1,26 @@
+node_modules/
+.wxt/
+.output/
+.env*
+!.env.example
+*.local
+
+artifacts/
+
+# Yerel kayıtlar, kimlik bilgileri ve test çıktıları
+.browser-profile/
+.playwright/
+playwright-report/
+test-results/
+coverage/
+.vscode/
+.idea/
+*.log
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+.DS_Store
+Thumbs.db
